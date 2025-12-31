@@ -1,0 +1,1 @@
+// Shows recently visited posts. Stores history in user cache

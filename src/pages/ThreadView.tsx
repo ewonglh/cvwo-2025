@@ -1,0 +1,1 @@
+// Displays thread content and comments
