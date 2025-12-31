@@ -1,5 +1,5 @@
 // The homepage
-import { Grid } from "@mui/material";
+import { Container, Grid } from "@mui/material";
 import ThreadCard from "../components/ThreadCard";
 import type { Thread } from "../types/Thread";
 
@@ -7,11 +7,11 @@ const threads: Thread[] = [
   {
     title:"Sigma", 
     author:"SigmaBall69",
-    upvote:0,
-    downvote:0,
+    upvote:5,
+    downvote:2,
     postType:"text", 
-    body:"Lorem Ipsum is simply dummy text of the printing and typesetting industry." +
-    "Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book." +
+    body:"Lorem Ipsum is simply dummy text of the printing and typesetting industry. " +
+    "Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. " +
     "It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.",
     timestamp: new Date()
   },
@@ -52,12 +52,10 @@ const threads: Thread[] = [
 
 export default function HomePage(){
     return (
-        <Grid>
-            <ul>
-                {threads.map((thread)=> (<ThreadCard {...thread} />))}
-            </ul>
-        </Grid>
-        
-    
-    );
+            <Grid>
+                <ul>
+                    {threads.map((thread)=> (<ThreadCard {...thread} />))}
+                </ul>
+            </Grid>
+);
 }

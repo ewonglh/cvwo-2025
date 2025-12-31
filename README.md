@@ -25,8 +25,7 @@ Fonts from [*Fontsource*](https://fontsource.org)
 ## Resources I used
 # Material UI
 Material UI 7 Tutorial: [Material UI v7 Complete Course](https://www.youtube.com/watch?v=XQVcsGbMBCM) by Code Genix
-Themes and Elements: [Material UI](https://mui.com/) | [MUI Treasury](https://www.mui-treasury.com/)
-
+Themes and Elements, including Theme Templates: [Material UI](https://mui.com/)
 ## AI Usage Declaration
 - To review and plan out project structure and organisation of folders into components
 - To help me figure out which mode of ReactRouter to use (Data Router)

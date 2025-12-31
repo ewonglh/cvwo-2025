@@ -24,15 +24,6 @@ const StyledCard = styled(Card)(({ theme }) => ({
   },
 }));
 
-const StyledBox = styled(Box)(({ theme }) => ({
-  margin: 10,
-  height: '100%',
-  '&:hover': {
-    backgroundColor: 'transparent',
-    cursor: 'pointer'
-    }
-}));
-
 export default function ThreadCard(content : Thread){
     function handleUpvote(){
         content.upvote += 1;
@@ -41,13 +32,15 @@ export default function ThreadCard(content : Thread){
         content.downvote += 1;
     }
     return <StyledCard variant="outlined">
-                <Typography variant="h3">{content.title}</Typography>
-                <Typography variant="subtitle1"> {content.author} </Typography>
-                <Typography variant="caption"> {content.body} </Typography>
-                <Container sx={{ display: "flex", flexDirection: "row", alignItems: "center", justifyContent: "left" }}> 
-                    <StyledBox><Button onClick={handleUpvote}><ThumbUpOffAltIcon/></Button></StyledBox>
-                    <StyledBox>{content.upvote-content.downvote}</StyledBox>
-                    <StyledBox><Button onClick={handleDownvote}><ThumbDownOffAltIcon/></Button></StyledBox>
+                <Typography variant="h5">{content.title}</Typography>
+                <Typography variant="subtitle2"> {content.author} | {content.timestamp.toLocaleString()} </Typography>
+                <Typography variant="caption" sx={{display:"-webkit-box", WebkitLineClamp: 3, WebkitBoxOrient: "vertical", overflow:"hidden", textOverflow:"ellipsis"}}> 
+                    {content.body} 
+                </Typography>
+                <Container sx={{ display: "flex", flexDirection: "row", alignItems: "center", justifyContent: "flex-start" }}> 
+                    <Button onClick={handleUpvote}><ThumbUpOffAltIcon/></Button>
+                    <Box>{content.upvote-content.downvote}</Box>
+                    <Button onClick={handleDownvote}><ThumbDownOffAltIcon/></Button>
                 </Container>
             </StyledCard>
 }

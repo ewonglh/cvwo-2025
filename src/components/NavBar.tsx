@@ -1,7 +1,7 @@
 // Navigation bar with search, topics, sort
 import { useState } from 'react'
 import { Link } from 'react-router-dom';
-import { Box, Container, Typography, IconButton, Toolbar, Tooltip, Menu, MenuItem } from '@mui/material';
+import { AppBar, Box, Container, Typography, IconButton, Toolbar, Tooltip, Menu, MenuItem } from '@mui/material';
 import { styled, alpha } from '@mui/material/styles';
 import { LogoDev } from '@mui/icons-material';
 import AccountCircle from '@mui/icons-material/AccountCircle';
@@ -54,10 +54,18 @@ export default function NavBar(){
         setAnchorElUser(null);
     };
 
-    return  <Container maxWidth="lg">
-                <StyledToolbar sx={{border: '1px solid', width:'100%', display:'flex', justifyContent:'center', alignContent:'center'}}>
-                    <LogoDev sx={{flex: 1}} />
-                    <Typography sx={{flex:1}}> <h3>Forum </h3> </Typography>
+    return  (<AppBar
+                position="fixed"
+                sx={{
+                    boxShadow: 0,
+                    bgcolor: 'transparent',
+                    backgroundImage: 'none',
+                    mt: 'calc(var(--template-frame-height, 0px) + 28px)',
+                }}
+                >
+                    <Container maxWidth="lg">
+                        <StyledToolbar sx={{border: '1px solid', width:'100%', display:'flex', justifyContent:'center', alignContent:'center'}}>
+                            <Typography variant="h5" sx={{flex:1}}> A Silly Forum </Typography>
                     <Box>
                         <Tooltip title="Theme">
                             <ColorModeIconDropdown sx={{ margin: '4px' }} />
@@ -101,5 +109,6 @@ export default function NavBar(){
                     </Box>
                 </StyledToolbar>
             </Container>
-    
+        </AppBar>
+    );
 }
