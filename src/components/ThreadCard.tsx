@@ -1,8 +1,9 @@
-import { Button, Box, Card, Container, Typography } from '@mui/material';
+import { IconButton, Button, ButtonGroup, Box, Card, Container, Typography } from '@mui/material';
 import ThumbUpIcon from '@mui/icons-material/ThumbUp';
 import ThumbUpOffAltIcon from '@mui/icons-material/ThumbUpOffAlt';
 import ThumbDownIcon from '@mui/icons-material/ThumbDown';
 import ThumbDownOffAltIcon from '@mui/icons-material/ThumbDownOffAlt';
+import CommentIcon from '@mui/icons-material/Comment';
 import { styled } from '@mui/material/styles';
 import type { Thread } from "../types/Thread";
 
@@ -24,6 +25,32 @@ const StyledCard = styled(Card)(({ theme }) => ({
   },
 }));
 
+const UpvoteButton = styled(IconButton)(({theme}) => {
+    return {
+          '&:hover': {
+            color: (theme.vars || theme).palette.success.main,
+          }
+        };
+});
+
+const DownvoteButton = styled(IconButton)(({theme}) => {
+    return {
+          '&:hover': {
+            color: (theme.vars || theme).palette.error.main,
+          }
+        };
+});
+
+const UpvoteCount = styled(Button)(({theme}) => {
+    return {
+        '&:disabled': {
+            color: (theme.vars || theme).palette.text.primary,
+            minWidth: '2rem'
+        }
+    };
+}
+);
+
 export default function ThreadCard(content : Thread){
     function handleUpvote(){
         content.upvote += 1;
@@ -31,16 +58,21 @@ export default function ThreadCard(content : Thread){
     function handleDownvote(){
         content.downvote += 1;
     }
+    function handleCommentClick(){
+        console.log("Comment Clicked");
+    }
+
     return <StyledCard variant="outlined">
                 <Typography variant="h5">{content.title}</Typography>
                 <Typography variant="subtitle2"> {content.author} | {content.timestamp.toLocaleString()} </Typography>
                 <Typography variant="caption" sx={{display:"-webkit-box", WebkitLineClamp: 3, WebkitBoxOrient: "vertical", overflow:"hidden", textOverflow:"ellipsis"}}> 
                     {content.body} 
                 </Typography>
-                <Container sx={{ display: "flex", flexDirection: "row", alignItems: "center", justifyContent: "flex-start" }}> 
-                    <Button onClick={handleUpvote}><ThumbUpOffAltIcon/></Button>
-                    <Box>{content.upvote-content.downvote}</Box>
-                    <Button onClick={handleDownvote}><ThumbDownOffAltIcon/></Button>
-                </Container>
+                <ButtonGroup>
+                    <UpvoteButton onClick={handleUpvote}><ThumbUpOffAltIcon/></UpvoteButton>
+                    <UpvoteCount disabled>{content.upvote-content.downvote}</UpvoteCount>
+                    <DownvoteButton onClick={handleDownvote}><ThumbDownOffAltIcon/></DownvoteButton>
+                </ButtonGroup>
+                <IconButton onClick={handleCommentClick}><CommentIcon/></IconButton>
             </StyledCard>
 }

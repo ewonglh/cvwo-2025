@@ -21,9 +21,7 @@ const StyledToolbar = styled(Toolbar)(({ theme }) => ({
   backdropFilter: 'blur(24px)',
   border: '1px solid',
   borderColor: (theme.vars || theme).palette.divider,
-  backgroundColor: theme.vars
-    ? `rgba(${theme.vars.palette.background.defaultChannel} / 0.4)`
-    : alpha(theme.palette.background.default, 0.4),
+  backgroundColor: 'transparent',
   boxShadow: (theme.vars || theme).shadows[1],
   padding: '8px 12px',
 }));
@@ -57,13 +55,13 @@ export default function NavBar(){
     return  (<AppBar
                 position="fixed"
                 sx={{
-                    boxShadow: 0,
-                    bgcolor: 'transparent',
+                    backgroundColor: 'transparent',
+                    color: (theme) => (theme.vars || theme).palette.text.primary,
                     backgroundImage: 'none',
                     mt: 'calc(var(--template-frame-height, 0px) + 28px)',
                 }}
                 >
-                    <Container maxWidth="lg">
+                    <Container maxWidth="lg" sx={{backgroundColor:'transparent'}}>
                         <StyledToolbar sx={{border: '1px solid', width:'100%', display:'flex', justifyContent:'center', alignContent:'center'}}>
                             <Typography variant="h5" sx={{flex:1}}> A Silly Forum </Typography>
                     <Box>
