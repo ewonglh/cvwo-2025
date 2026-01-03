@@ -42,7 +42,7 @@ export default function ThreadCard(content : Thread){
         <CreateCommentDialog threadId={content.id} />
     }
 
-    return  <Link key={content.id} to='/thread/$threadid' params = {{threadid : content.id}} style={{ textDecoration: 'none', color: 'inherit' }}>              
+    return  <Link key={content.id} to='/thread/$threadid' params = {{threadid : content.id.toString()}} style={{ textDecoration: 'none', color: 'inherit' }}>              
               <StyledCard variant="outlined">
                 <Typography variant="h5">{content.title}</Typography>
                 <Typography variant="subtitle2"> {content.author} | {content.timestamp.toLocaleString()} </Typography>
