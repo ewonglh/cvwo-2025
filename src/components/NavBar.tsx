@@ -1,9 +1,7 @@
 // Navigation bar with search, topics, sort
 import { useState } from 'react'
-import { Link } from 'react-router-dom';
 import { AppBar, Box, Container, Typography, IconButton, Toolbar, Tooltip, Menu, MenuItem } from '@mui/material';
-import { styled, alpha } from '@mui/material/styles';
-import { LogoDev } from '@mui/icons-material';
+import { styled } from '@mui/material/styles';
 import AccountCircle from '@mui/icons-material/AccountCircle';
 import NotificationsIcon from '@mui/icons-material/Notifications';
 
@@ -54,15 +52,17 @@ export default function NavBar(){
 
     return  (<AppBar
                 position="fixed"
+                enableColorOnDark
                 sx={{
                     backgroundColor: 'transparent',
                     color: (theme) => (theme.vars || theme).palette.text.primary,
                     backgroundImage: 'none',
+                    boxShadow: 'none',
                     mt: 'calc(var(--template-frame-height, 0px) + 28px)',
                 }}
                 >
-                    <Container maxWidth="lg" sx={{backgroundColor:'transparent'}}>
-                        <StyledToolbar sx={{border: '1px solid', width:'100%', display:'flex', justifyContent:'center', alignContent:'center'}}>
+                    <Container maxWidth="lg">
+                        <StyledToolbar sx={{ backgroundColor: 'transparent', border: '1px solid', width:'100%', display:'flex', justifyContent:'center', alignContent:'center'}}>
                             <Typography variant="h5" sx={{flex:1}}> A Silly Forum </Typography>
                     <Box>
                         <Tooltip title="Theme">

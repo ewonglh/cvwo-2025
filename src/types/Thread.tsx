@@ -1,4 +1,5 @@
 export type Thread = {
+  id : number;
   title: string;
   author: string;
   upvote: number;

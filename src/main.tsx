@@ -1,19 +1,29 @@
-import { StrictMode } from 'react';
-import { createRoot } from 'react-dom/client';
-import { StyledEngineProvider } from '@mui/material/styles';
-import { Route, Routes, BrowserRouter } from 'react-router-dom';
-import App from './App';
+import { StrictMode } from 'react'
+import ReactDOM from 'react-dom/client'
+import { RouterProvider, createRouter } from '@tanstack/react-router'
+import { routeTree } from './routeTree.gen'
 
-createRoot(document.querySelector("#root")!).render(
-  
-  <StrictMode>
-    <StyledEngineProvider injectFirst>
-      <BrowserRouter>
-        <Routes>
-          
-        </Routes>
-        <App />
-      </BrowserRouter>
-    </StyledEngineProvider>
-  </StrictMode>
-);
+// Reminders for myself: 
+// StrictMode identifies potential problems in an application (eg. outdated dependencies)
+// StyledEngineProvider injectFirst makes sure MUI styles are loaded first (so they can be overridden)
+
+// Create a new router instance
+const router = createRouter({ routeTree })
+
+// Register the router instance for type safety
+declare module '@tanstack/react-router' {
+  interface Register {
+    router: typeof router
+  }
+}
+
+// Render the app
+const rootElement = document.getElementById('root')!
+if (!rootElement.innerHTML) {
+  const root = ReactDOM.createRoot(rootElement)
+  root.render(
+    <StrictMode>
+      <RouterProvider router={router} />
+    </StrictMode>,
+  )
+}
