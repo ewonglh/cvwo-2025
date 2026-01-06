@@ -7,6 +7,7 @@ import NotificationsIcon from '@mui/icons-material/Notifications';
 
 import AppTheme from '../theme/AppTheme';
 import ColorModeIconDropdown from '../theme/ColorModeIconDropdown';
+import Cookie from 'js-cookie';
 
 const settings = ['Account', 'Logout'];
 
@@ -98,11 +99,12 @@ export default function NavBar(){
                             open={Boolean(anchorElUser)}
                             onClose={handleCloseUserMenu}
                         >
-                            {settings.map((setting) => (
-                                <MenuItem key={setting} onClick={handleCloseUserMenu}>
-                                <Typography sx={{ textAlign: 'center' }}>{setting}</Typography>
-                                </MenuItem>
-                            ))}
+                            <MenuItem key={"Account"} onClick={handleCloseUserMenu}>
+                            <Typography sx={{ textAlign: 'center' }}>Account</Typography>
+                            </MenuItem>
+                            <MenuItem key={"Logout"} onClick={handleCloseUserMenu}>
+                            <Typography sx={{ textAlign: 'center' }}>Logout</Typography>
+                            </MenuItem>
                         </Menu>
                     </Box>
                 </StyledToolbar>

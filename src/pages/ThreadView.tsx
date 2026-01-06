@@ -5,8 +5,8 @@ import ThumbDownIcon from '@mui/icons-material/ThumbDown';
 import ThumbDownOffAltIcon from '@mui/icons-material/ThumbDownOffAlt';
 import CommentIcon from '@mui/icons-material/Comment';
 import { ArrowBack } from "@mui/icons-material";
-import type { Thread } from "../types/Thread";
-import type { Comment } from "../types/Comment";
+import type { Thread } from "../interfaces/Thread";
+import type { Comment } from "../interfaces/Comment";
 import { UpvoteButton, DownvoteButton, UpvoteCount } from "../components/UpvoteDownvote";
 import { getThreadById, getCommentsByThreadId, addCommentToThread, addDownvoteToComment, addDownvoteToThread, addUpvoteToComment, addUpvoteToThread } from "../data"; // Placeholder threads data
 import ThreadCard from "../components/ThreadCard";  

@@ -4,7 +4,7 @@ import { Container, CssBaseline } from '@mui/material';
 import AppTheme from '../theme/AppTheme';
 import NavBar from "../components/NavBar";
 
-// Outlet is where child routes will be rendered
+// Note to self: Outlet is where child routes will be rendered
 
 const RootLayout = () => (
   <>

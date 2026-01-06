@@ -3,11 +3,10 @@ import ThumbUpIcon from '@mui/icons-material/ThumbUp';
 import ThumbUpOffAltIcon from '@mui/icons-material/ThumbUpOffAlt';
 import ThumbDownIcon from '@mui/icons-material/ThumbDown';
 import ThumbDownOffAltIcon from '@mui/icons-material/ThumbDownOffAlt';
-import CommentIcon from '@mui/icons-material/Comment';
 import { styled } from '@mui/material/styles';
 import { UpvoteButton, DownvoteButton, UpvoteCount } from './UpvoteDownvote';
 import CreateCommentDialog from './CreateCommentDialog';
-import type { Thread } from "../types/Thread";
+import type { Thread } from "../interfaces/Thread";
 import { Link } from '@tanstack/react-router';
 
 export const StyledCard = styled(Card)(({ theme }) => ({
@@ -39,7 +38,7 @@ export default function ThreadCard(content : Thread){
         content.downvote += 1;
     }
     function handleCommentClick(){
-        <CreateCommentDialog threadId={content.id} />
+        return <CreateCommentDialog threadId={content.id} />
     }
 
     return  <Link key={content.id} to='/thread/$threadid' params = {{threadid : content.id.toString()}} style={{ textDecoration: 'none', color: 'inherit' }}>              
@@ -55,7 +54,7 @@ export default function ThreadCard(content : Thread){
                       <UpvoteCount disabled>{content.upvote-content.downvote}</UpvoteCount>
                       <DownvoteButton onClick={handleDownvote}><ThumbDownOffAltIcon/></DownvoteButton>
                   </ButtonGroup>
-                  <IconButton onClick={handleCommentClick}><CommentIcon/></IconButton>
+                  <CreateCommentDialog threadId={content.id} />
                 </Container>
             </StyledCard>
           </Link>;

@@ -1,6 +1,7 @@
 import { addCommentToThread } from "../data";
 import { useState } from "react";
-import { Dialog, DialogTitle, DialogContent, DialogActions, Button, TextField } from "@mui/material";
+import { Dialog, DialogTitle, DialogContent, DialogActions, IconButton, Button, TextField } from "@mui/material";
+import CommentIcon from '@mui/icons-material/Comment';
 
 export default function CreateCommentDialog({threadId}: {threadId: number}) {
     const [open, setOpen] = useState(false);
@@ -14,11 +15,28 @@ export default function CreateCommentDialog({threadId}: {threadId: number}) {
         setOpen(false);
     }
 
-    return <Dialog open={open} onClose={()=> setOpen(false)}>
+    function handleClose(){
+        setOpen(false);
+    }
+
+    function handleOpen(){
+        setOpen(true);
+    }
+
+    return <>
+    <IconButton onClick={handleOpen}><CommentIcon/></IconButton>
+        <Dialog 
+            open={open} 
+            onClose={handleClose} 
+            sx={{ '& .MuiPaper-root': 
+                { backgroundColor: 'theme.palette.background.default', 
+                backgroundImage: 'none' } 
+        }}>
         <DialogTitle>New comment</DialogTitle>
         <DialogContent>
             <TextField
                 autoFocus
+                required
                 margin="dense"
                 id="author"
                 label="Author"
@@ -28,6 +46,7 @@ export default function CreateCommentDialog({threadId}: {threadId: number}) {
                 onChange={(e) => setAuthor(e.target.value)}
             />
             <TextField
+                required
                 margin="dense"
                 id="body"
                 label="Comment"
@@ -40,8 +59,9 @@ export default function CreateCommentDialog({threadId}: {threadId: number}) {
             />
         </DialogContent>
         <DialogActions>
-            <Button onClick={()=> setOpen(false)}>Cancel</Button>
+            <Button onClick={handleClose}>Cancel</Button>
             <Button onClick={handleSubmit}>Submit</Button>
         </DialogActions>
-    </Dialog>; 
+    </Dialog>
+    </>
 }

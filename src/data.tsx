@@ -1,5 +1,5 @@
-import { Thread } from "./types/Thread";
-import { Comment } from "./types/Comment";
+import { Thread } from "./interfaces/Thread";
+import { Comment } from "./interfaces/Comment";
 
 export const threadData : Thread[] = [
   {
