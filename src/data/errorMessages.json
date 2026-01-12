@@ -1,0 +1,14 @@
+{
+  "FetchThreads": "Error fetching threads",
+  "FetchComments": "Error fetching comments",
+  "Login": {
+    "general": "An unexpected error occurred. Please try again.",
+    "noResponse": "No response from server. Please check your connection and try again.",
+    "invalidCredentials": "Login failed. Please check your credentials."
+  },
+  "Register": {
+    "general": "An unexpected error occurred. Please try again.",
+    "noResponse": "No response from server. Please check your connection and try again.",
+    "registrationFailed": "Registration failed. Please try again."
+  }
+}

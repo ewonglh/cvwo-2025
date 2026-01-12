@@ -3,28 +3,31 @@ import errorMessages from '../data/errorMessages.json';
 
 // @ts-ignore
 const API_URL = (import.meta.env.VITE_API_URL as string) || "http://localhost:3000";
-const LOGIN_ENDPOINT = "/auth/local/login";
+const REGISTER_ENDPOINT = "/registerUser";
 
-export interface LoginResponse {
+export interface RegisterResponse {
     accessToken: string;
+    userId: string;
     [key: string]: unknown;
 }
 
-export interface LoginError {
+export interface RegisterError {
     message: string;
     status?: number;
 }
 
-export async function loginUser(
+export async function registerUser(
     username: string,
     password: string
-): Promise<{ data?: LoginResponse; error?: LoginError }> {
+): Promise<{ data?: RegisterResponse; error?: RegisterError }> {
     try {
-        const response = await axios.post<LoginResponse>(
-            `${API_URL}${LOGIN_ENDPOINT}`,
+        const response = await axios.post<RegisterResponse>(
+            `${API_URL}${REGISTER_ENDPOINT}`,
             {
                 username,
                 password,
+                isModerator : false,
+                BanEnd : null
             },
             {
                 headers: {
@@ -37,16 +40,16 @@ export async function loginUser(
             data: response.data,
         };
     } catch (error) {
-        console.error("Login error:", error);
+        console.error("Registration error:", error);
 
         if (axios.isAxiosError(error)) {
             const axiosError = error as AxiosError<{ message?: string }>;
-            
+
             if (axiosError.response) {
                 const message =
                     axiosError.response.data?.message ||
                     axiosError.response.statusText ||
-                    errorMessages.Login.invalidCredentials;
+                    errorMessages.Register.registrationFailed;
 
                 return {
                     error: {
@@ -57,13 +60,13 @@ export async function loginUser(
             } else if (axiosError.request) {
                 return {
                     error: {
-                        message: errorMessages.Login.noResponse,
+                        message: errorMessages.Register.noResponse,
                     },
                 };
             } else {
                 return {
                     error: {
-                        message: axiosError.message || errorMessages.Login.general,
+                        message: axiosError.message || errorMessages.Register.general,
                     },
                 };
             }
@@ -71,7 +74,7 @@ export async function loginUser(
 
         return {
             error: {
-                message: errorMessages.Login.general,
+                message: errorMessages.Register.general,
             },
         };
     }

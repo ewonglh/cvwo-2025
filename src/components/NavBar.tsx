@@ -1,13 +1,13 @@
 // Navigation bar with search, topics, sort
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { AppBar, Box, Container, Typography, IconButton, Toolbar, Tooltip, Menu, MenuItem } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import AccountCircle from '@mui/icons-material/AccountCircle';
 import NotificationsIcon from '@mui/icons-material/Notifications';
 
-import AppTheme from '../theme/AppTheme';
 import ColorModeIconDropdown from '../theme/ColorModeIconDropdown';
-import Cookie from 'js-cookie';
+import LoginDialog from './LoginDialog';
+import RegisterDialog from './RegisterDialog';
 
 const settings = ['Account', 'Logout'];
 
@@ -42,6 +42,21 @@ const StyledIconButton = styled(IconButton)(({theme}) => {
 
 export default function NavBar(){
     const [anchorElUser, setAnchorElUser]  = useState<null | HTMLElement>(null);
+    const [isLoggedIn, setIsLoggedIn] = useState(false);
+    const [loginDialogOpen, setLoginDialogOpen] = useState(false);
+    const [registerDialogOpen, setRegisterDialogOpen] = useState(false);
+
+    useEffect(() => {
+        // Check if user is logged in by checking for token
+        const token = localStorage.getItem("accessToken");
+        setIsLoggedIn(!!token);
+    }, []);
+
+    // Close all dialogs if one is opened
+    const closeAllDialogs = () => {
+        setLoginDialogOpen(false);
+        setRegisterDialogOpen(false);
+    }
 
     const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>) => {
         setAnchorElUser(event.currentTarget);
@@ -49,6 +64,30 @@ export default function NavBar(){
 
     const handleCloseUserMenu = () => {
         setAnchorElUser(null);
+    };
+
+    const handleLogin = () => {
+        closeAllDialogs();
+        setLoginDialogOpen(true);
+        handleCloseUserMenu();
+    };
+
+    const handleRegister = () => {
+        closeAllDialogs();
+        setRegisterDialogOpen(true);
+        handleCloseUserMenu();
+    }
+
+    const handleLogout = () => {
+        localStorage.removeItem("accessToken");
+        localStorage.removeItem("userId");
+        setIsLoggedIn(false);
+        handleCloseUserMenu();
+    };
+
+    const handleAccount = () => {
+        // TODO: Navigate to account settings
+        handleCloseUserMenu();
     };
 
     return  (<AppBar
@@ -99,14 +138,29 @@ export default function NavBar(){
                             open={Boolean(anchorElUser)}
                             onClose={handleCloseUserMenu}
                         >
-                            <MenuItem key={"Account"} onClick={handleCloseUserMenu}>
-                            <Typography sx={{ textAlign: 'center' }}>Account</Typography>
-                            </MenuItem>
-                            <MenuItem key={"Logout"} onClick={handleCloseUserMenu}>
-                            <Typography sx={{ textAlign: 'center' }}>Logout</Typography>
-                            </MenuItem>
+                            {!isLoggedIn ? (
+                                <>
+                                <MenuItem onClick={handleLogin}>
+                                    <Typography sx={{ textAlign: 'center' }}>Login</Typography>
+                                </MenuItem>
+                                <MenuItem onClick={handleRegister}>
+                                    <Typography sx={{ textAlign: 'center' }}>Register</Typography>
+                                </MenuItem>
+                                </>
+                            ) : (
+                                <>
+                                    <MenuItem onClick={handleAccount}>
+                                        <Typography sx={{ textAlign: 'center' }}>Account</Typography>
+                                    </MenuItem>
+                                    <MenuItem onClick={handleLogout}>
+                                        <Typography sx={{ textAlign: 'center' }}>Logout</Typography>
+                                    </MenuItem>
+                                </>
+                            )}
                         </Menu>
                     </Box>
+                    <LoginDialog open={loginDialogOpen} onClose={() => setLoginDialogOpen(false)} onLoginSuccess={() => setIsLoggedIn(true)} />
+                    <RegisterDialog open={registerDialogOpen} onClose={() => setRegisterDialogOpen(false)} />
                 </StyledToolbar>
             </Container>
         </AppBar>
