@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Typography, Container, CircularProgress } from "@mui/material";
+import { Typography, Container } from "@mui/material";
 import CommentIcon from '@mui/icons-material/Comment';
 import { ArrowBack } from "@mui/icons-material";
 import ThreadCard from "../components/ThreadCard";
@@ -9,6 +9,7 @@ import { FetchThreads } from "../api/FetchThreads";
 import { FetchComments } from "../api/FetchComments";
 import { Thread } from '../interfaces/Thread';
 import { Comment } from '../interfaces/Comment';
+import ThreadViewSkeleton from './skeletons/ThreadViewSkeleton'; 
 
 export default function ThreadView() {
     const [thread, setThread] = useState<Thread | null>(null);
@@ -38,10 +39,7 @@ export default function ThreadView() {
 
     if (loading) {
         return (
-            <Container>
-                <CircularProgress />
-                <Typography>Loading...</Typography>
-            </Container>
+            <ThreadViewSkeleton />
         );
     }
 

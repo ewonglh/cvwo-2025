@@ -1,4 +1,3 @@
-// Navigation bar with search, topics, sort
 import { useState, useEffect } from 'react'
 import { AppBar, Box, Container, Typography, IconButton, Toolbar, Tooltip, Menu, MenuItem } from '@mui/material';
 import { styled } from '@mui/material/styles';
@@ -8,6 +7,7 @@ import NotificationsIcon from '@mui/icons-material/Notifications';
 import ColorModeIconDropdown from '../theme/ColorModeIconDropdown';
 import LoginDialog from './LoginDialog';
 import RegisterDialog from './RegisterDialog';
+import { getAccessToken, logout } from '../api/AuthHandler';
 
 const settings = ['Account', 'Logout'];
 
@@ -48,7 +48,7 @@ export default function NavBar(){
 
     useEffect(() => {
         // Check if user is logged in by checking for token
-        const token = localStorage.getItem("accessToken");
+        const token = getAccessToken();
         setIsLoggedIn(!!token);
     }, []);
 
@@ -79,8 +79,7 @@ export default function NavBar(){
     }
 
     const handleLogout = () => {
-        localStorage.removeItem("accessToken");
-        localStorage.removeItem("userId");
+        logout();
         setIsLoggedIn(false);
         handleCloseUserMenu();
     };

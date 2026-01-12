@@ -1,8 +1,9 @@
 import { useEffect, useState } from 'react';
-import { Grid, CircularProgress, Typography } from "@mui/material";
+import { Grid } from "@mui/material";
 import ThreadCard from "../components/ThreadCard";
 import { FetchThreads } from "../api/FetchThreads";
 import { Thread } from '../interfaces/Thread';
+import HomePageSkeleton from './skeletons/HomePageSkeleton';
 
 export default function HomePage() {
     const [threads, setThreads] = useState<Thread[]>([]);
@@ -25,10 +26,7 @@ export default function HomePage() {
 
     if (loading) {
         return (
-            <Grid>
-                <CircularProgress />
-                <Typography>Loading...</Typography>
-            </Grid>
+            <HomePageSkeleton />
         );
     }
 

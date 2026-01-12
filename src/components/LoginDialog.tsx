@@ -10,7 +10,7 @@ import {
     CircularProgress,
     Box,
 } from "@mui/material";
-import { loginUser } from "../api/Login";
+import { loginAndSetTokens } from "../api/AuthHandler";
 
 interface LoginDialogProps {
     open?: boolean;
@@ -40,20 +40,10 @@ export default function LoginDialog({ open: externalOpen = false, onClose, onLog
             return;
         }
 
-        // Call login API
-        const result = await loginUser(username, password);
+        try {
+            // Call login API
+            await loginAndSetTokens(username, password);
 
-        setLoading(false);
-
-        if (result.error) {
-            setError(result.error.message);
-        } else if (result.data?.accessToken) {
-            // Store token and userId (not very secure)
-            localStorage.setItem("accessToken", result.data.accessToken);
-            if (result.data && "userId" in result.data) {
-                localStorage.setItem("userId", result.data.userId as string);
-            }
-            
             // Reset form and close
             setUsername("");
             setPassword("");
@@ -69,8 +59,10 @@ export default function LoginDialog({ open: externalOpen = false, onClose, onLog
             if (onClose) {
                 onClose();
             }
-        } else {
+        } catch (error) {
             setError("Login failed. Please try again.");
+        } finally {
+            setLoading(false);
         }
     }
 
