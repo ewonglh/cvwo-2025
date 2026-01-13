@@ -7,6 +7,7 @@ import NotificationsIcon from '@mui/icons-material/Notifications';
 import ColorModeIconDropdown from '../theme/ColorModeIconDropdown';
 import LoginDialog from './LoginDialog';
 import RegisterDialog from './RegisterDialog';
+import NewPostDialog from './NewPostDialog';
 import { getAccessToken, logout } from '../api/AuthHandler';
 
 const settings = ['Account', 'Logout'];
@@ -45,6 +46,7 @@ export default function NavBar(){
     const [isLoggedIn, setIsLoggedIn] = useState(false);
     const [loginDialogOpen, setLoginDialogOpen] = useState(false);
     const [registerDialogOpen, setRegisterDialogOpen] = useState(false);
+    const [newPostDialogOpen, setNewPostDialogOpen] = useState(false);
 
     useEffect(() => {
         // Check if user is logged in by checking for token
@@ -55,6 +57,7 @@ export default function NavBar(){
     // Close all dialogs if one is opened
     const closeAllDialogs = () => {
         setLoginDialogOpen(false);
+        setNewPostDialogOpen(false);
         setRegisterDialogOpen(false);
     }
 
@@ -137,25 +140,21 @@ export default function NavBar(){
                             open={Boolean(anchorElUser)}
                             onClose={handleCloseUserMenu}
                         >
-                            {!isLoggedIn ? (
-                                <>
-                                <MenuItem onClick={handleLogin}>
+                            {!isLoggedIn ? [
+                                <MenuItem onClick={handleLogin} key="login">
                                     <Typography sx={{ textAlign: 'center' }}>Login</Typography>
-                                </MenuItem>
-                                <MenuItem onClick={handleRegister}>
+                                </MenuItem>,
+                                <MenuItem onClick={handleRegister} key="register">
                                     <Typography sx={{ textAlign: 'center' }}>Register</Typography>
                                 </MenuItem>
-                                </>
-                            ) : (
-                                <>
-                                    <MenuItem onClick={handleAccount}>
-                                        <Typography sx={{ textAlign: 'center' }}>Account</Typography>
-                                    </MenuItem>
-                                    <MenuItem onClick={handleLogout}>
-                                        <Typography sx={{ textAlign: 'center' }}>Logout</Typography>
-                                    </MenuItem>
-                                </>
-                            )}
+                            ] : [
+                                <MenuItem onClick={handleAccount} key="account">
+                                    <Typography sx={{ textAlign: 'center' }}>Account</Typography>
+                                </MenuItem>,
+                                <MenuItem onClick={handleLogout} key="logout">
+                                    <Typography sx={{ textAlign: 'center' }}>Logout</Typography>
+                                </MenuItem>
+                            ]}
                         </Menu>
                     </Box>
                     <LoginDialog open={loginDialogOpen} onClose={() => setLoginDialogOpen(false)} onLoginSuccess={() => setIsLoggedIn(true)} />

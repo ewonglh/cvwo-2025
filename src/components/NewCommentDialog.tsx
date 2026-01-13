@@ -1,30 +1,53 @@
-import { addCommentToThread } from "../data";
 import { useState } from "react";
-import { Dialog, DialogTitle, DialogContent, DialogActions, IconButton, Button, TextField } from "@mui/material";
+import { Dialog, DialogTitle, DialogContent, DialogActions, IconButton, Button, TextField, Alert } from "@mui/material";
 import CommentIcon from '@mui/icons-material/Comment';
+import { CreateComment } from "../api/CreateComment";
+import { getAccessToken } from "../api/AuthHandler";
 
 export default function CreateCommentDialog({threadId}: {threadId: number}) {
     const [open, setOpen] = useState(false);
-    const [author, setAuthor] = useState("");
     const [body, setBody] = useState("");
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState<string | null>(null);
 
-    function handleSubmit(){
-        addCommentToThread(threadId, author, body);
-        setAuthor("");
-        setBody("");
-        setOpen(false);
+    const isLoggedIn = !!getAccessToken();
+
+    async function handleSubmit(){
+        if (!isLoggedIn) {
+            setError("You must be logged in to comment.");
+            return;
+        }
+
+        setError(null);
+        setLoading(true);
+
+        try {
+            await CreateComment(threadId, body);
+            setBody("");
+            setOpen(false);
+        } catch (err) {
+            setError("Failed to create comment. Please try again.");
+        } finally {
+            setLoading(false);
+        }
     }
 
     function handleClose(){
         setOpen(false);
+        setBody("");
+        setError(null);
     }
 
     function handleOpen(){
+        if (!isLoggedIn) {
+            setError("You must be logged in to comment.");
+            return;
+        }
         setOpen(true);
     }
 
     return <>
-    <IconButton onClick={handleOpen}><CommentIcon/></IconButton>
+    <IconButton onClick={handleOpen} disabled={!isLoggedIn}><CommentIcon/></IconButton>
         <Dialog 
             open={open} 
             onClose={handleClose} 
@@ -34,18 +57,9 @@ export default function CreateCommentDialog({threadId}: {threadId: number}) {
         }}>
         <DialogTitle>New comment</DialogTitle>
         <DialogContent>
+            {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
             <TextField
                 autoFocus
-                required
-                margin="dense"
-                id="author"
-                label="Author"
-                type="text"
-                variant="standard"
-                value={author}
-                onChange={(e) => setAuthor(e.target.value)}
-            />
-            <TextField
                 required
                 margin="dense"
                 id="body"
@@ -56,11 +70,12 @@ export default function CreateCommentDialog({threadId}: {threadId: number}) {
                 rows={4}
                 value={body}
                 onChange={(e) => setBody(e.target.value)}
+                disabled={loading}
             />
         </DialogContent>
         <DialogActions>
-            <Button onClick={handleClose}>Cancel</Button>
-            <Button onClick={handleSubmit}>Submit</Button>
+            <Button onClick={handleClose} disabled={loading}>Cancel</Button>
+            <Button onClick={handleSubmit} disabled={loading}>Submit</Button>
         </DialogActions>
     </Dialog>
     </>

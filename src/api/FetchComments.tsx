@@ -10,3 +10,13 @@ export async function FetchComments() {
     throw error;
   }
 }
+
+export async function FetchCommentsByThread(threadId: number) {
+  try {
+    const response = await axios.get(`/getComments?threadId=${threadId}`);
+    return response.data;
+  } catch (error) {
+    console.error(errorMessages.FetchComments, error);
+    throw error;
+  }
+}

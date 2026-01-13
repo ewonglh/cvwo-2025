@@ -9,8 +9,11 @@ import {
     Alert,
     CircularProgress,
     Box,
+    Typography,
+    Divider
 } from "@mui/material";
 import { registerUser } from "../api/Register";
+import { useTheme } from '@mui/material/styles';
 
 interface RegisterDialogProps {
     open?: boolean;
@@ -23,6 +26,7 @@ export default function RegisterDialog({
     onClose,
     onRegisterSuccess,
 }: RegisterDialogProps) {
+    const theme = useTheme();
     const [internalOpen, setInternalOpen] = useState(false);
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
@@ -30,70 +34,41 @@ export default function RegisterDialog({
     const [error, setError] = useState<string | null>(null);
     const [loading, setLoading] = useState(false);
 
-    // Use external open prop if provided, otherwise use internal state
     const isOpen = externalOpen !== undefined ? externalOpen : internalOpen;
 
     async function handleSubmit() {
-        // Clear previous errors
         setError(null);
         setLoading(true);
-
-        // Validate inputs
         if (!username.trim() || !password.trim()) {
             setError("Please fill in all fields.");
             setLoading(false);
             return;
         }
-
-        // Validate password confirmation
         if (password !== confirmPassword) {
             setError("Passwords do not match.");
             setLoading(false);
             return;
         }
-
-        // Call registration API
         const result = await registerUser(username, password);
-
         setLoading(false);
-
         if (result.error) {
             setError(result.error.message);
         } else if (result.data?.accessToken) {
-            // Store token and userId
-            localStorage.setItem("accessToken", result.data.accessToken);
-            if (result.data && "userId" in result.data) {
-                localStorage.setItem("userId", result.data.userId as string);
-            }
-
-            // Reset form and close
             setUsername("");
             setPassword("");
             setConfirmPassword("");
             setError(null);
-            if (externalOpen === undefined) {
-                setInternalOpen(false);
-            }
-            // Call success callback if provided
-            if (onRegisterSuccess) {
-                onRegisterSuccess();
-            }
-            // Close external dialog if onClose provided
-            if (onClose) {
-                onClose();
-            }
+            if (externalOpen === undefined) setInternalOpen(false);
+            if (onRegisterSuccess) onRegisterSuccess();
+            if (onClose) onClose();
         } else {
             setError("Registration failed. Please try again.");
         }
     }
 
     function handleClose() {
-        if (externalOpen === undefined) {
-            setInternalOpen(false);
-        }
-        if (onClose) {
-            onClose();
-        }
+        if (externalOpen === undefined) setInternalOpen(false);
+        if (onClose) onClose();
         setError(null);
         setUsername("");
         setPassword("");
@@ -101,119 +76,171 @@ export default function RegisterDialog({
     }
 
     function handleOpen() {
-        if (externalOpen === undefined) {
-            setInternalOpen(true);
-        }
+        if (externalOpen === undefined) setInternalOpen(true);
     }
+
+    const buttonSx = (theme: any) => ({
+        textTransform: 'none',
+        fontWeight: 500,
+        borderRadius: '6px',
+        transition: 'all 0.2s ease-in-out',
+    });
+
+    const containedButtonSx = (theme: any) => ({
+        ...buttonSx(theme),
+        backgroundColor: (theme.vars || theme).palette.text.primary,
+        color: (theme.vars || theme).palette.background.paper,
+        '&:hover': {
+            backgroundColor: (theme.vars || theme).palette.mode === 'dark' 
+                ? (theme.vars || theme).palette.grey[300] : (theme.vars || theme).palette.grey[800],
+            boxShadow: (theme.vars || theme).shadows[2],
+        },
+        '&.Mui-disabled': {
+            backgroundColor: (theme.vars || theme).palette.action.disabledBackground,
+            color: (theme.vars || theme).palette.action.disabled,
+        }
+    });
+
+    const textFieldSx = (theme: any) => ({ 
+        '& .MuiInput-underline:before': {
+            borderBottomColor: (theme.vars || theme).palette.divider,
+        },
+        '& .MuiInput-underline:hover:before': {
+            borderBottomColor: (theme.vars || theme).palette.text.primary,
+        },
+        '& .MuiInput-underline:after': {
+            borderBottomColor: (theme.vars || theme).palette.text.primary,
+        },
+        '& .MuiInputBase-input': {
+            fontSize: '0.95rem',
+            color: (theme.vars || theme).palette.text.primary,
+        },
+        '& .MuiFormLabel-root': {
+            color: (theme.vars || theme).palette.text.secondary,
+        },
+        '& .MuiFormLabel-root.Mui-focused': {
+            color: (theme.vars || theme).palette.text.primary,
+        }
+    });
 
     return (
         <>
             {externalOpen === undefined && (
-                <Button onClick={handleOpen} variant="contained" sx={{ ml: 2 }}>
+                <Button onClick={handleOpen} variant="text" sx={{ ml: 2, textTransform: 'none', fontSize: '1rem' }}>
                     Register
                 </Button>
             )}
             <Dialog
                 open={isOpen}
                 onClose={handleClose}
-                maxWidth="sm"
+                maxWidth="xs"
                 fullWidth
-                sx={{
-                    "& .MuiPaper-root": {
-                        backgroundColor: "theme.palette.background.default",
-                        backgroundImage: "none",
-                    },
+                slotProps={{
+                    paper: {
+                        sx: (theme) => ({
+                            borderRadius: '12px',
+                            bgcolor: (theme.vars || theme).palette.background.paper,
+                            color: (theme.vars || theme).palette.text.primary,
+                            boxShadow: (theme.vars || theme).shadows[10],
+                            border: `1px solid ${(theme.vars || theme).palette.divider}`,
+                            backgroundImage: 'none',
+                        })
+                    }
                 }}
             >
-                <DialogTitle>Register</DialogTitle>
-                <DialogContent>
-                    <Box sx={{ display: "flex", flexDirection: "column", gap: 2, mt: 1 }}>
-                        {error && (
-                            <Alert severity="error" onClose={() => setError(null)}>
-                                {error}
-                            </Alert>
-                        )}
-                        <TextField
-                            autoFocus
-                            required
-                            margin="dense"
-                            id="username"
-                            label="Username"
-                            type="text"
-                            variant="outlined"
-                            fullWidth
-                            value={username}
-                            onChange={(e) => setUsername(e.target.value)}
+                <Box sx={{ p: 4 }}>
+                    <DialogTitle sx={{ textAlign: 'center', p: 0, mb: 1 }}>
+                        <Typography variant="h5" fontWeight={700} sx={(theme) => ({ letterSpacing: -0.5, color: (theme.vars || theme).palette.text.primary })}>
+                            Create Account
+                        </Typography>
+                        <Typography variant="body2" sx={(theme) => ({ color: (theme.vars || theme).palette.text.secondary, mt: 0.5 })}>
+                            Join the community today
+                        </Typography>
+                    </DialogTitle>
+
+                    <DialogContent sx={{ p: 0, mt: 3 }}>
+                        <Box sx={{ display: "flex", flexDirection: "column", gap: 3 }}>
+                            {error && (
+                                <Alert 
+                                    severity="error" 
+                                    variant="outlined"
+                                    onClose={() => setError(null)}
+                                    sx={{ borderRadius: '8px', fontSize: '0.875rem' }}
+                                >
+                                    {error}
+                                </Alert>
+                            )}
+                            <TextField
+                                autoFocus
+                                required
+                                id="username"
+                                label="Username"
+                                type="text"
+                                variant="standard"
+                                fullWidth
+                                value={username}
+                                onChange={(e) => setUsername(e.target.value)}
+                                disabled={loading}
+                                sx={textFieldSx}
+                            />
+                            <TextField
+                                required
+                                id="password"
+                                label="Password"
+                                type="password"
+                                variant="standard"
+                                fullWidth
+                                value={password}
+                                onChange={(e) => setPassword(e.target.value)}
+                                disabled={loading}
+                                sx={textFieldSx}
+                            />
+                            <TextField
+                                required
+                                id="confirmPassword"
+                                label="Confirm Password"
+                                type="password"
+                                variant="standard"
+                                fullWidth
+                                value={confirmPassword}
+                                onChange={(e) => setConfirmPassword(e.target.value)}
+                                disabled={loading}
+                                sx={textFieldSx}
+                            />
+                        </Box>
+                    </DialogContent>
+                    <DialogActions sx={{ justifyContent: 'center', gap: 2, p: 0, mt: 5 }}>
+                        <Button 
+                            onClick={handleClose} 
                             disabled={loading}
-                            onKeyDown={(e) => {
-                                if (e.key === "Enter") {
-                                    handleSubmit();
+                            sx={(theme) => ({ 
+                                ...buttonSx(theme),
+                                color: (theme.vars || theme).palette.text.secondary,
+                                '&:hover': {
+                                    color: (theme.vars || theme).palette.text.primary,
+                                    backgroundColor: (theme.vars || theme).palette.action.hover,
                                 }
-                            }}
-                        />
-                        <TextField
-                            required
-                            margin="dense"
-                            id="password"
-                            label="Password"
-                            type="password"
-                            variant="outlined"
-                            fullWidth
-                            value={password}
-                            onChange={(e) => setPassword(e.target.value)}
+                            })}
+                        >
+                            Cancel
+                        </Button>
+                        <Button
+                            onClick={handleSubmit}
+                            variant="contained"
                             disabled={loading}
-                            onKeyDown={(e) => {
-                                if (e.key === "Enter") {
-                                    handleSubmit();
-                                }
-                            }}
-                        />
-                        <TextField
-                            required
-                            margin="dense"
-                            id="confirmPassword"
-                            label="Confirm Password"
-                            type="password"
-                            variant="outlined"
-                            fullWidth
-                            value={confirmPassword}
-                            onChange={(e) => setConfirmPassword(e.target.value)}
-                            disabled={loading}
-                            onKeyDown={(e) => {
-                                if (e.key === "Enter") {
-                                    handleSubmit();
-                                }
-                            }}
-                        />
-                    </Box>
-                </DialogContent>
-                <DialogActions>
-                    <Button onClick={handleClose} disabled={loading}>
-                        Cancel
-                    </Button>
-                    <Button
-                        onClick={handleSubmit}
-                        variant="contained"
-                        disabled={loading}
-                        sx={{ position: "relative" }}
-                    >
-                        {loading ? (
-                            <>
+                            sx={containedButtonSx}
+                        >
+                            {loading ? (
                                 <CircularProgress
                                     size={24}
-                                    sx={{
-                                        position: "absolute",
-                                        left: "50%",
-                                        marginLeft: "-12px",
-                                    }}
+                                    sx={{ color: 'inherit' }}
                                 />
-                                <span style={{ visibility: "hidden" }}>Register</span>
-                            </>
-                        ) : (
-                            "Register"
-                        )}
-                    </Button>
-                </DialogActions>
+                            ) : (
+                                "Register"
+                            )}
+                        </Button>
+                    </DialogActions>
+                </Box>
             </Dialog>
         </>
     );

@@ -1,10 +1,14 @@
 import { createFileRoute } from '@tanstack/react-router';
 import ThreadView from '../../pages/ThreadView';
-import { getCommentsByThreadId, getThreadById } from '../../data';
+import { FetchThread } from '../../api/FetchThreads';
+import { FetchCommentsByThread } from '../../api/FetchComments';
 
 export const Route = createFileRoute('/thread/$threadid')({
     loader: async ({ params }) => {
-        return { thread : getThreadById(Number(params.threadid)), comments : getCommentsByThreadId(Number(params.threadid)) };
+        const threadId = Number(params.threadid);
+        const thread = await FetchThread(threadId);
+        const comments = await FetchCommentsByThread(threadId);
+        return { thread, comments };
     },
     component: ThreadView,
 });
