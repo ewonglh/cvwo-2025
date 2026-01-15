@@ -1,11 +1,7 @@
-import { IconButton, Button, ButtonGroup, Box, Card, Container, Typography } from '@mui/material';
-import ThumbUpIcon from '@mui/icons-material/ThumbUp';
-import ThumbUpOffAltIcon from '@mui/icons-material/ThumbUpOffAlt';
-import ThumbDownIcon from '@mui/icons-material/ThumbDown';
-import ThumbDownOffAltIcon from '@mui/icons-material/ThumbDownOffAlt';
+import { ButtonGroup, Card, Container, Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { UpvoteButton, DownvoteButton, UpvoteCount } from './UpvoteDownvote';
-import CreateCommentDialog from './CreateCommentDialog';
+import CreateCommentDialog from './NewCommentDialog';
 import type { Thread } from "../interfaces/Thread";
 import { Link } from '@tanstack/react-router';
 
@@ -38,23 +34,23 @@ export default function ThreadCard(content : Thread){
         content.downvote += 1;
     }
     function handleCommentClick(){
-        return <CreateCommentDialog threadId={content.id} />
+        return <CreateCommentDialog threadId={content.threadId} />
     }
 
-    return  <Link key={content.id} to='/thread/$threadid' params = {{threadid : content.id.toString()}} style={{ textDecoration: 'none', color: 'inherit' }}>              
+    return  <Link key={content.threadId} to='/thread/$threadid' params = {{threadid : content.threadId.toString()}} style={{ textDecoration: 'none', color: 'inherit' }}>              
               <StyledCard variant="outlined">
                 <Typography variant="h5">{content.title}</Typography>
-                <Typography variant="subtitle2"> {content.author} | {content.timestamp.toLocaleString()} </Typography>
+                <Typography variant="subtitle2"> {content.author} | {content.timestamp.toLocaleString()} {content.edited ? " (edited)" : ""} </Typography>
                 <Typography variant="caption" sx={ isPreview ? {display:"-webkit-box", WebkitLineClamp: 3, WebkitBoxOrient: "vertical", overflow:"hidden", textOverflow:"ellipsis"} : {}} > 
                     {content.body} 
                 </Typography>
                 <Container sx={{padding:'0px', display:'flex', gap:'0px 20px'}}>
                     <ButtonGroup>
-                      <UpvoteButton onClick={handleUpvote}><ThumbUpOffAltIcon/></UpvoteButton>
+                      <UpvoteButton onClick={handleUpvote}></UpvoteButton>
                       <UpvoteCount disabled>{content.upvote-content.downvote}</UpvoteCount>
-                      <DownvoteButton onClick={handleDownvote}><ThumbDownOffAltIcon/></DownvoteButton>
+                      <DownvoteButton onClick={handleDownvote}></DownvoteButton>
                   </ButtonGroup>
-                  <CreateCommentDialog threadId={content.id} />
+                  <CreateCommentDialog threadId={content.threadId} />
                 </Container>
             </StyledCard>
           </Link>;
