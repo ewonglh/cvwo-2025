@@ -8,7 +8,7 @@ import ColorModeIconDropdown from '../theme/ColorModeIconDropdown';
 import LoginDialog from './LoginDialog';
 import RegisterDialog from './RegisterDialog';
 import NewPostDialog from './NewPostDialog';
-import { getAccessToken, logout } from '../api/AuthHandler';
+import { getAccessToken, getUsername, logout } from '../api/AuthHandler';
 
 const settings = ['Account', 'Logout'];
 
@@ -44,6 +44,7 @@ const StyledIconButton = styled(IconButton)(({theme}) => {
 export default function NavBar(){
     const [anchorElUser, setAnchorElUser]  = useState<null | HTMLElement>(null);
     const [isLoggedIn, setIsLoggedIn] = useState(false);
+    const [username, setUsername] = useState<string | null>(null);
     const [loginDialogOpen, setLoginDialogOpen] = useState(false);
     const [registerDialogOpen, setRegisterDialogOpen] = useState(false);
     const [newPostDialogOpen, setNewPostDialogOpen] = useState(false);
@@ -51,7 +52,9 @@ export default function NavBar(){
     useEffect(() => {
         // Check if user is logged in by checking for token
         const token = getAccessToken();
+        const storedUsername = getUsername();
         setIsLoggedIn(!!token);
+        if (storedUsername) setUsername(storedUsername);
     }, []);
 
     // Close all dialogs if one is opened
@@ -81,9 +84,16 @@ export default function NavBar(){
         handleCloseUserMenu();
     }
 
+    const handleLoginSuccess = () => {
+        setIsLoggedIn(true);
+        const storedUsername = getUsername();
+        if (storedUsername) setUsername(storedUsername);
+    };
+
     const handleLogout = () => {
         logout();
         setIsLoggedIn(false);
+        setUsername(null);
         handleCloseUserMenu();
     };
 
@@ -119,7 +129,7 @@ export default function NavBar(){
                         </Tooltip>
                     </Box>
                     <Box>
-                        <Tooltip title="User">
+                        <Tooltip title={isLoggedIn && username ? username : "User"}>
                             <StyledIconButton onClick={handleOpenUserMenu} data-screenshot="toggle-mode">
                                 <AccountCircle/>
                             </StyledIconButton>
@@ -157,7 +167,7 @@ export default function NavBar(){
                             ]}
                         </Menu>
                     </Box>
-                    <LoginDialog open={loginDialogOpen} onClose={() => setLoginDialogOpen(false)} onLoginSuccess={() => setIsLoggedIn(true)} />
+                    <LoginDialog open={loginDialogOpen} onClose={() => setLoginDialogOpen(false)} onLoginSuccess={handleLoginSuccess} />
                     <RegisterDialog open={registerDialogOpen} onClose={() => setRegisterDialogOpen(false)} />
                 </StyledToolbar>
             </Container>

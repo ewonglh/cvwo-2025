@@ -1,87 +1,47 @@
-import axios, { AxiosResponse } from 'axios';
+import axios from 'axios';
 import Cookie from 'js-cookie';
 
 // Localhost for testing
 const API_URL = (import.meta.env.VITE_API_URL as string) || "http://localhost:3000";
 
-// Token keys for storage
-const ACCESS_TOKEN_KEY = 'accessToken';
-const REFRESH_TOKEN_KEY = 'refreshToken';
+// go-pkgz/auth uses HttpOnly cookies
+axios.defaults.withCredentials = true;
+
+// Key for storage to track login status in the UI
+const LOGGED_IN_KEY = 'isLoggedIn';
+const USERNAME_KEY = 'username';
 
 export function getAccessToken(): string | undefined {
-  return Cookie.get(ACCESS_TOKEN_KEY);
+  return Cookie.get(LOGGED_IN_KEY);
 }
 
-export function getRefreshToken(): string | undefined {
-  return Cookie.get(REFRESH_TOKEN_KEY);
+export function getUsername(): string | undefined {
+  return Cookie.get(USERNAME_KEY);
 }
 
-export function setTokens(accessToken: string, refreshToken: string): void {
-  Cookie.set(ACCESS_TOKEN_KEY, accessToken, { secure: true, sameSite: 'strict' });
-  Cookie.set(REFRESH_TOKEN_KEY, refreshToken, { secure: true, sameSite: 'strict' });
+export function setTokens(token: string, username: string): void {
+  // Store a flag to be referenced by other functions since the real JWT is handled by HttpOnly cookies
+  Cookie.set(LOGGED_IN_KEY, 'true', { secure: true, sameSite: 'strict' });
+  Cookie.set(USERNAME_KEY, username, { secure: true, sameSite: 'strict' });
 }
 
 export function clearTokens(): void {
-  Cookie.remove(ACCESS_TOKEN_KEY);
-  Cookie.remove(REFRESH_TOKEN_KEY);
+  Cookie.remove(LOGGED_IN_KEY);
+  Cookie.remove(USERNAME_KEY);
 }
-
-// Function to refresh access token
-async function refreshAccessToken(): Promise<string | null> {
-  const refreshToken = getRefreshToken();
-  if (!refreshToken) {
-    return null;
-  }
-
-  try {
-    const response: AxiosResponse<{ accessToken: string }> = await axios.post(`${API_URL}/auth/refresh`, {
-      refreshToken,
-    });
-    const newAccessToken = response.data.accessToken;
-    // More secure way to store token yay
-    Cookie.set(ACCESS_TOKEN_KEY, newAccessToken, { secure: true, sameSite: 'strict' });
-    return newAccessToken;
-  } catch (error) {
-    console.error('Failed to refresh token:', error);
-    clearTokens();
-    // Optionally, redirect to login
-    window.location.href = '/login';
-    return null;
-  }
-}
-
-// Attach access token to outgoing requests
-axios.interceptors.request.use(
-  (config) => {
-    const token = getAccessToken();
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
-    }
-    return config;
-  },
-  (error) => Promise.reject(error)
-);
-
-axios.interceptors.response.use(
-  (response) => response,
-  async (error) => {
-    const originalRequest = error.config;
-    if (error.response?.status === 401 && !originalRequest._retry) {
-      originalRequest._retry = true;
-      const newToken = await refreshAccessToken();
-      if (newToken) {
-        originalRequest.headers.Authorization = `Bearer ${newToken}`;
-        return axios(originalRequest);
-      }
-    }
-    return Promise.reject(error);
-  }
-);
 
 export async function loginAndSetTokens(username: string, password: string): Promise<void> {
-  const response = await axios.post(`${API_URL}/auth/login`, { username, password });
-  const { accessToken, refreshToken } = response.data;
-  setTokens(accessToken, refreshToken);
+  // go-pkgz/auth local provider typically expects 'user' and 'passwd'
+  const response = await axios.post(`${API_URL}/auth/local/login`, {
+    user: username,
+    passwd: password
+  });
+
+  // go-pkgz/auth returns { token, user }
+  const { token } = response.data;
+  if (token) {
+    setTokens(token, username);
+  }
 }
 
 export function logout(): void {
