@@ -3,12 +3,14 @@ import { AppBar, Box, Container, Typography, IconButton, Toolbar, Tooltip, Menu,
 import { styled } from '@mui/material/styles';
 import AccountCircle from '@mui/icons-material/AccountCircle';
 import NotificationsIcon from '@mui/icons-material/Notifications';
+import PostAddIcon from '@mui/icons-material/PostAdd';
 
 import ColorModeIconDropdown from '../theme/ColorModeIconDropdown';
 import LoginDialog from './LoginDialog';
 import RegisterDialog from './RegisterDialog';
 import NewPostDialog from './NewPostDialog';
 import { getAccessToken, getUsername, logout } from '../api/AuthHandler';
+import { useRouter } from '@tanstack/react-router';
 
 const settings = ['Account', 'Logout'];
 
@@ -42,6 +44,7 @@ const StyledIconButton = styled(IconButton)(({theme}) => {
 });
 
 export default function NavBar(){
+    const router = useRouter();
     const [anchorElUser, setAnchorElUser]  = useState<null | HTMLElement>(null);
     const [isLoggedIn, setIsLoggedIn] = useState(false);
     const [username, setUsername] = useState<string | null>(null);
@@ -55,6 +58,11 @@ export default function NavBar(){
         const storedUsername = getUsername();
         setIsLoggedIn(!!token);
         if (storedUsername) setUsername(storedUsername);
+
+        // Listen for login dialog requests
+        const handleOpenLogin = () => setLoginDialogOpen(true);
+        window.addEventListener('openLoginDialog', handleOpenLogin);
+        return () => window.removeEventListener('openLoginDialog', handleOpenLogin);
     }, []);
 
     // Close all dialogs if one is opened
@@ -76,6 +84,14 @@ export default function NavBar(){
         closeAllDialogs();
         setLoginDialogOpen(true);
         handleCloseUserMenu();
+    };
+
+    const handleNewPostClick = () => {
+        if (!isLoggedIn) {
+            setLoginDialogOpen(true);
+        } else {
+            setNewPostDialogOpen(true);
+        }
     };
 
     const handleRegister = () => {
@@ -129,6 +145,13 @@ export default function NavBar(){
                         </Tooltip>
                     </Box>
                     <Box>
+                        <Tooltip title="New Post">
+                            <StyledIconButton onClick={handleNewPostClick}>
+                                <PostAddIcon sx={{ padding: '3px' }} />
+                            </StyledIconButton>
+                        </Tooltip>
+                    </Box>
+                    <Box>
                         <Tooltip title={isLoggedIn && username ? username : "User"}>
                             <StyledIconButton onClick={handleOpenUserMenu} data-screenshot="toggle-mode">
                                 <AccountCircle/>
@@ -169,6 +192,18 @@ export default function NavBar(){
                     </Box>
                     <LoginDialog open={loginDialogOpen} onClose={() => setLoginDialogOpen(false)} onLoginSuccess={handleLoginSuccess} />
                     <RegisterDialog open={registerDialogOpen} onClose={() => setRegisterDialogOpen(false)} />
+                    <NewPostDialog 
+                        open={newPostDialogOpen} 
+                        onClose={() => setNewPostDialogOpen(false)} 
+                        isLoggedIn={isLoggedIn}
+                        onPostCreated={() => {
+                            router.invalidate();
+                            // Optionally navigate to home if not there
+                            if (window.location.pathname !== '/home') {
+                                router.navigate({ to: '/home' });
+                            }
+                        }}
+                    />
                 </StyledToolbar>
             </Container>
         </AppBar>

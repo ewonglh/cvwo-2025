@@ -1,18 +1,31 @@
-import { Typography, Container, ButtonGroup } from "@mui/material";
+import { Typography, Container, ButtonGroup, Box } from "@mui/material";
 import { UpvoteButton, UpvoteCount, DownvoteButton } from "./UpvoteDownvote";
 import type { Comment } from "../interfaces/Comment";
-import { addDownvoteToComment, addUpvoteToComment } from "../data";
 
-export default function CommentContainer(comment: Comment){
+export default function CommentContainer(comment: Comment) {
+    const handleUpvote = () => {
+        // TODO: Implement actual upvote API call for comments
+    };
+
+    const handleDownvote = () => {
+        // TODO: Implement actual downvote API call for comments
+    };
+
     return (
-        <Container>
-            <Typography variant="h6" sx={{margin: '5px 0px 3px'}}>{comment.author}</Typography>
-            <Typography variant="body2" sx={{margin: '3px 0px 3px'}}>{comment.body}</Typography>
+        <Box sx={{ 
+            p: 2, 
+            border: '1px solid', 
+            borderColor: 'divider', 
+            borderRadius: 2,
+            backgroundColor: 'background.paper'
+        }}>
+            <Typography variant="subtitle2" color="primary" sx={{ mb: 0.5 }}>{comment.author}</Typography>
+            <Typography variant="body2" sx={{ mb: 2 }}>{comment.body}</Typography>
             <ButtonGroup size="small">
-                    <UpvoteButton size="small" onClick={() => addUpvoteToComment(comment.threadId)}></UpvoteButton>
-                    <UpvoteCount disabled>{comment.upvote-comment.downvote}</UpvoteCount>
-                    <DownvoteButton size="small" onClick={() => addDownvoteToComment(comment.threadId)}></DownvoteButton>
+                <UpvoteButton size="small" onClick={handleUpvote}></UpvoteButton>
+                <UpvoteCount disabled>{comment.upvote - comment.downvote}</UpvoteCount>
+                <DownvoteButton size="small" onClick={handleDownvote}></DownvoteButton>
             </ButtonGroup> 
-        </Container>
+        </Box>
     );
 }

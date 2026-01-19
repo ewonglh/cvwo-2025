@@ -1,11 +1,5 @@
-import axios from 'axios';
+import apiClient from './apiClient';
 import Cookie from 'js-cookie';
-
-// Localhost for testing
-const API_URL = (import.meta.env.VITE_API_URL as string) || "http://localhost:3000";
-
-// go-pkgz/auth uses HttpOnly cookies
-axios.defaults.withCredentials = true;
 
 // Key for storage to track login status in the UI
 const LOGGED_IN_KEY = 'isLoggedIn';
@@ -21,8 +15,9 @@ export function getUsername(): string | undefined {
 
 export function setTokens(token: string, username: string): void {
   // Store a flag to be referenced by other functions since the real JWT is handled by HttpOnly cookies
-  Cookie.set(LOGGED_IN_KEY, 'true', { secure: true, sameSite: 'strict' });
-  Cookie.set(USERNAME_KEY, username, { secure: true, sameSite: 'strict' });
+  const isSecure = window.location.protocol === 'https:';
+  Cookie.set(LOGGED_IN_KEY, 'true', { secure: isSecure, sameSite: 'strict' });
+  Cookie.set(USERNAME_KEY, username, { secure: isSecure, sameSite: 'strict' });
 }
 
 export function clearTokens(): void {
@@ -32,20 +27,16 @@ export function clearTokens(): void {
 
 export async function loginAndSetTokens(username: string, password: string): Promise<void> {
   // go-pkgz/auth local provider typically expects 'user' and 'passwd'
-  const response = await axios.post(`${API_URL}/auth/local/login`, {
+  const response = await apiClient.post(`/auth/local/login`, {
     user: username,
     passwd: password
   });
 
-  // go-pkgz/auth returns { token, user }
-  const { token } = response.data;
-  if (token) {
-    setTokens(token, username);
-  }
+  // If we got a 200 OK, the login was successful.
+  // The actual JWT is handled by HttpOnly cookies, so we just set our UI flags.
+  setTokens('', username);
 }
 
 export function logout(): void {
   clearTokens();
-  // Optionally, redirect to login
-  window.location.href = '/login';
 }

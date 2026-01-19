@@ -11,7 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as HomeRouteImport } from './routes/home'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as ThreadThreadidRouteImport } from './routes/thread/$threadid'
+import { Route as ThreadThreadidRouteImport } from './routes/thread.$threadid'
 
 const HomeRoute = HomeRouteImport.update({
   id: '/home',

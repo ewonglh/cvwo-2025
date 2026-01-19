@@ -18,9 +18,6 @@ declare module '@tanstack/react-router' {
   }
 }
 
-// Test: Login
-Cookie.set('loginToken', 'test-token', {secure : true});
-
 // Render the app
 const rootElement = document.getElementById('root')!
 if (!rootElement.innerHTML) {

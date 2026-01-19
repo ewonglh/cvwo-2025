@@ -1,8 +1,7 @@
-import axios, { AxiosError } from "axios";
+import apiClient from "./apiClient";
 import errorMessages from '../data/errorMessages.json';
+import { AxiosError, isAxiosError } from "axios";
 
-// @ts-ignore
-const API_URL = (import.meta.env.VITE_API_URL as string) || "http://localhost:3000";
 const REGISTER_ENDPOINT = "/registerUser";
 
 export interface RegisterResponse {
@@ -21,8 +20,8 @@ export async function registerUser(
     password: string
 ): Promise<{ data?: RegisterResponse; error?: RegisterError }> {
     try {
-        const response = await axios.post<RegisterResponse>(
-            `${API_URL}${REGISTER_ENDPOINT}`,
+        const response = await apiClient.post<RegisterResponse>(
+            REGISTER_ENDPOINT,
             {
                 username,
                 password,
@@ -42,7 +41,7 @@ export async function registerUser(
     } catch (error) {
         console.error("Registration error:", error);
 
-        if (axios.isAxiosError(error)) {
+        if (isAxiosError(error)) {
             const axiosError = error as AxiosError<{ message?: string }>;
 
             if (axiosError.response) {

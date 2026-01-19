@@ -3,8 +3,6 @@ import { TanStackRouterDevtools } from '@tanstack/react-router-devtools';
 import { Container, CssBaseline, Typography, Box } from '@mui/material';
 import AppTheme from '../theme/AppTheme';
 import NavBar from "../components/NavBar";
-import HomePageSkeleton from '../pages/skeletons/HomePageSkeleton';
-import { useState, useEffect } from 'react';
 
 // Note to self: Outlet is where child routes will be rendered
 

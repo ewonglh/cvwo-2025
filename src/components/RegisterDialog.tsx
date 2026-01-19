@@ -14,6 +14,7 @@ import {
 } from "@mui/material";
 import { registerUser } from "../api/Register";
 import { useTheme } from '@mui/material/styles';
+import { setTokens } from "../api/AuthHandler";
 
 interface RegisterDialogProps {
     open?: boolean;
@@ -53,7 +54,8 @@ export default function RegisterDialog({
         setLoading(false);
         if (result.error) {
             setError(result.error.message);
-        } else if (result.data?.accessToken) {
+        } else if (result.data) {
+            setTokens('', username);
             setUsername("");
             setPassword("");
             setConfirmPassword("");

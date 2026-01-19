@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { 
     Dialog, 
     DialogTitle, 
@@ -11,25 +11,24 @@ import {
     Typography, 
     CircularProgress 
 } from "@mui/material";
-import { CreatePost } from "../api/CreatePost";
+import { NewThread } from "../api/NewThread";
 import { getAccessToken } from "../api/AuthHandler";
 
 interface NewPostDialogProps {
   open: boolean;
   onClose: () => void;
   onPostCreated?: () => void;
+  isLoggedIn: boolean;
 }
 
-export default function NewPostDialog({ open, onClose, onPostCreated }: NewPostDialogProps) {
+export default function NewPostDialog({ open, onClose, onPostCreated, isLoggedIn }: NewPostDialogProps) {
   const [title, setTitle] = useState("");
   const [body, setBody] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const isLoggedIn = !!getAccessToken();
-
   async function handleSubmit() {
-    if (!isLoggedIn) {
+    if (!getAccessToken()) {
       setError("You must be logged in to create a post.");
       return;
     }
@@ -43,7 +42,7 @@ export default function NewPostDialog({ open, onClose, onPostCreated }: NewPostD
     setLoading(true);
 
     try {
-      await CreatePost(title, body);
+      await NewThread(title, body);
       setTitle("");
       setBody("");
       onClose();
