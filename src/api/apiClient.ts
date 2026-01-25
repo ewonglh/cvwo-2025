@@ -1,4 +1,5 @@
 import axios from 'axios';
+import Cookies from 'js-cookie';
 
 const API_URL = import.meta.env.VITE_API_URL as string;
 
@@ -7,19 +8,13 @@ axios.defaults.withCredentials = true; // Ik this is redundant but trying to fix
 const apiClient = axios.create({
   baseURL: API_URL,
   withCredentials: true,
-  withXSRFToken: true,
-  xsrfCookieName: 'XSRF-TOKEN',
-  xsrfHeaderName: 'X-XSRF-TOKEN',
 });
 
 apiClient.interceptors.request.use((config) => {
-  const token = document.cookie
-    .split('; ')
-    .find((row) => row.startsWith('XSRF-TOKEN='))
-    ?.split('=')[1];
+  const token = Cookies.get('XSRF-TOKEN');
 
   if (token) {
-    config.headers['X-XSRF-TOKEN'] = decodeURIComponent(token);
+    config.headers['X-XSRF-TOKEN'] = token;
   }
   return config;
 });
