@@ -3,11 +3,10 @@ import Cookies from 'js-cookie';
 
 const API_URL = import.meta.env.VITE_API_URL as string;
 
-axios.defaults.withCredentials = true; // Ik this is redundant but trying to fix bug :(
-
 const apiClient = axios.create({
   baseURL: API_URL,
   withCredentials: true,
+  withXSRFToken: true,
 });
 
 apiClient.interceptors.request.use((config) => {
@@ -49,7 +48,5 @@ apiClient.interceptors.response.use((response) => {
   }
   return response;
 });
-
-export const getCsrfToken = () => apiClient.get('/auth/csrf');
 
 export default apiClient;
