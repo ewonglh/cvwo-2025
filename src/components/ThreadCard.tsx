@@ -4,6 +4,9 @@ import { UpvoteButton, DownvoteButton, UpvoteCount } from './UpvoteDownvote';
 import CreateCommentDialog from './NewCommentDialog';
 import type { Thread } from "../interfaces/Thread";
 import { Link } from '@tanstack/react-router';
+import { useState } from 'react';
+import type { MouseEvent } from 'react';
+import { upvoteThread, downvoteThread, unvoteThread } from '../api/ThreadActions';
 
 export const StyledCard = styled(Card)(({ theme }) => ({
   display: 'flex',
@@ -27,14 +30,50 @@ interface ThreadCardProps extends Thread {
 
 export default function ThreadCard(props: ThreadCardProps) {
   const { isPreview = true, ...content } = props;
+  const [upvotes, setUpvotes] = useState(content.upvote);
+  const [downvotes, setDownvotes] = useState(content.downvote);
+  const [userVote, setUserVote] = useState<'up' | 'down' | null>(content.userVote || null);
 
-  function handleUpvote() {
-    // TODO: Implement actual upvote API call
-    content.upvote += 1;
+  async function handleUpvote(e: MouseEvent) {
+    e.stopPropagation();
+    e.preventDefault();
+    try {
+      if (userVote === 'up') {
+        await unvoteThread(content.threadId);
+        setUpvotes(prev => prev - 1);
+        setUserVote(null);
+      } else {
+        await upvoteThread(content.threadId);
+        setUpvotes(prev => prev + 1);
+        if (userVote === 'down') {
+          setDownvotes(prev => prev - 1);
+        }
+        setUserVote('up');
+      }
+    } catch (error) {
+      console.error("Failed to upvote thread:", error);
+    }
   }
-  function handleDownvote() {
-    // TODO: Implement actual downvote API call
-    content.downvote += 1;
+
+  async function handleDownvote(e: MouseEvent) {
+    e.stopPropagation();
+    e.preventDefault();
+    try {
+      if (userVote === 'down') {
+        await unvoteThread(content.threadId);
+        setDownvotes(prev => prev - 1);
+        setUserVote(null);
+      } else {
+        await downvoteThread(content.threadId);
+        setDownvotes(prev => prev + 1);
+        if (userVote === 'up') {
+          setUpvotes(prev => prev - 1);
+        }
+        setUserVote('down');
+      }
+    } catch (error) {
+      console.error("Failed to downvote thread:", error);
+    }
   }
 
   const CardContent = (
@@ -76,9 +115,9 @@ export default function ThreadCard(props: ThreadCardProps) {
 
       <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mt: 3 }}>
         <Stack direction="row" alignItems="center">
-          <UpvoteButton onClick={handleUpvote} size="small" />
-          <UpvoteCount disabled>{content.upvote - content.downvote}</UpvoteCount>
-          <DownvoteButton onClick={handleDownvote} size="small" />
+          <UpvoteButton onClick={handleUpvote} size="small" active={userVote === 'up'} />
+          <UpvoteCount disabled>{upvotes - downvotes}</UpvoteCount>
+          <DownvoteButton onClick={handleDownvote} size="small" active={userVote === 'down'} />
           <CreateCommentDialog threadId={content.threadId} />
         </Stack>
       </Box>

@@ -1,6 +1,6 @@
 import apiClient from './apiClient';
 
-export type CommentAction = 'upvote' | 'downvote' | 'edit' | 'delete';
+export type CommentAction = 'upvote' | 'downvote' | 'edit' | 'delete' | 'unvote';
 
 interface CommentActionPayload {
   commentId: number;
@@ -20,5 +20,6 @@ export async function commentAction(payload: CommentActionPayload) {
 
 export const upvoteComment = (commentId: number) => commentAction({ commentId, action: 'upvote' });
 export const downvoteComment = (commentId: number) => commentAction({ commentId, action: 'downvote' });
+export const unvoteComment = (commentId: number) => commentAction({ commentId, action: 'unvote' });
 export const editComment = (commentId: number, body: string) => commentAction({ commentId, action: 'edit', body });
 export const deleteComment = (commentId: number) => commentAction({ commentId, action: 'delete' });

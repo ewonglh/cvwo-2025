@@ -104,6 +104,7 @@ export default function NavBar(){
         setIsLoggedIn(true);
         const storedUsername = getUsername();
         if (storedUsername) setUsername(storedUsername);
+        router.invalidate();
     };
 
     const handleLogout = () => {
@@ -111,6 +112,7 @@ export default function NavBar(){
         setIsLoggedIn(false);
         setUsername(null);
         handleCloseUserMenu();
+        router.invalidate();
     };
 
     const handleAccount = () => {
@@ -191,7 +193,7 @@ export default function NavBar(){
                         </Menu>
                     </Box>
                     <LoginDialog open={loginDialogOpen} onClose={() => setLoginDialogOpen(false)} onLoginSuccess={handleLoginSuccess} />
-                    <RegisterDialog open={registerDialogOpen} onClose={() => setRegisterDialogOpen(false)} />
+                    <RegisterDialog open={registerDialogOpen} onClose={() => setRegisterDialogOpen(false)} onRegisterSuccess={handleLoginSuccess} />
                     <NewPostDialog 
                         open={newPostDialogOpen} 
                         onClose={() => setNewPostDialogOpen(false)} 

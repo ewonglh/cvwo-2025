@@ -10,4 +10,5 @@ export interface Thread {
   edited : boolean;
   deleted : boolean;
   timestamp: Date;
+  userVote?: 'up' | 'down' | null;
 };

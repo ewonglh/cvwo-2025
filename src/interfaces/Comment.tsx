@@ -9,4 +9,5 @@ export interface Comment {
   edited : boolean;
   deleted : boolean;
   timestamp: Date;
+  userVote?: 'up' | 'down' | null;
 };

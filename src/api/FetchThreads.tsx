@@ -10,6 +10,7 @@ const mapThread = (thread: any): Thread => ({
   upvote: Number(thread.upvote || 0),
   downvote: Number(thread.downvote || 0),
   timestamp: new Date(thread.timestamp),
+  userVote: thread.userVote || null,
 });
 
 const mapComment = (comment: any): Comment => ({
@@ -20,6 +21,7 @@ const mapComment = (comment: any): Comment => ({
   upvote: Number(comment.upvote || 0),
   downvote: Number(comment.downvote || 0),
   timestamp: new Date(comment.timestamp),
+  userVote: comment.userVote || null,
 });
 
 export async function FetchThreads(): Promise<Thread[]> {

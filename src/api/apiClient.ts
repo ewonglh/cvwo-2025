@@ -2,9 +2,12 @@ import axios from 'axios';
 
 const API_URL = import.meta.env.VITE_API_URL as string;
 
+axios.defaults.withCredentials = true; // Ik this is redundant but trying to fix bug :(
+
 const apiClient = axios.create({
   baseURL: API_URL,
   withCredentials: true,
+  withXSRFToken: true,
   xsrfCookieName: 'XSRF-TOKEN',
   xsrfHeaderName: 'X-XSRF-TOKEN',
 });
@@ -17,6 +20,7 @@ const toCamel = (s: string): string => {
           .replace(/id$/i, 'Id');
 };
 
+// To convert all keys in an object (and nested objects) to camelCase since my backend is very messy
 const recursivelyCamelize = (obj: any): any => {
   if (Array.isArray(obj)) {
     return obj.map(recursivelyCamelize);
